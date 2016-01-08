@@ -85,8 +85,9 @@ function swapBandLayers(band) {
 	var proto = {
 		"interactive": true,
 		"type": "fill",
-		"source": "specdata",
-		"source-layer": band,
+		"source": "specmap",
+		"source-layer": "specmap",
+		"filter": ["all", ["==", "block", band]],
 		"paint": {
 			"fill-opacity": 0.5,
 			"fill-color": "#555",
@@ -110,16 +111,13 @@ function swapBandLayers(band) {
 			}
 		}
 
-		batch.addLayer(Object.assign({
-			"id": "specmap_default",
-			"filter": ["!in", "owner_common_name"].concat(Object.keys(color_table)),
-		}, proto));
+		var l = Object.assign({ "id": "specmap_default" }, proto);
+		l.filter = l.filter.concat([["!in", "owner_common_name"].concat(Object.keys(color_table))]);
+		batch.addLayer(l);
 
 		for (var owner in color_table) {
-			var l = Object.assign({
-				"id": "specmap_" + owner,
-				"filter": ["==", "owner_common_name", owner],
-			}, proto);
+			var l = Object.assign({ "id": "specmap_" + owner }, proto);
+			l.filter = l.filter.concat([["==", "owner_common_name", owner]]);
 			l.paint['fill-color'] = color_table[owner];
 			batch.addLayer(l);
 		}
@@ -127,7 +125,7 @@ function swapBandLayers(band) {
 }
 
 map.on('style.load', function () {
-	map.addSource('specdata', {
+	map.addSource('specmap', {
 		type: 'vector',
 		tiles: [(location.protocol == 'https:' ? 'https' : 'http') + "://kreed.org/specmap/tiles/{z}/{x}/{y}.pbf"],
 		minzoom: 0,
