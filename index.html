@@ -131,7 +131,8 @@ map.on('style.load', function () {
 		type: 'vector',
 		tiles: [(location.protocol == 'https:' ? 'https' : 'http') + "://kreed.org/specmap/tiles/{z}/{x}/{y}.pbf"],
 		minzoom: 0,
-		maxzoom: 10
+		maxzoom: 10,
+		attribution: '<a href="specmap.mbtiles">Download data</a>'
 	});
 
 	swapBandLayers('700LA');
