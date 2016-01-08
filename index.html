@@ -124,12 +124,12 @@ function swapBandLayers(band) {
 		});
 
 		var l = Object.assign({ "id": "specmap_default" }, proto);
-		l.filter = l.filter.concat([["!in", "owner_common_name"].concat(Object.keys(color_table))]);
+		l.filter = l.filter.concat([["!in", "owner_dba"].concat(Object.keys(color_table))]);
 		batch.addLayer(l);
 
 		for (var owner in color_table) {
 			var l = Object.assign({ "id": "specmap_" + owner }, proto);
-			l.filter = l.filter.concat([["==", "owner_common_name", owner]]);
+			l.filter = l.filter.concat([["==", "owner_dba", owner]]);
 			l.paint['fill-color'] = color_table[owner];
 			batch.addLayer(l);
 		}
@@ -164,7 +164,7 @@ map.on('click', function (e) {
 			var p = features[i]['properties'];
 
 			if (features[i]['layer']['id'].startsWith('specmap')) {
-				html += '<tr><td>Owner</td><td>' + (p.owner_common_name ? p.owner_common_name : p.owner) + '</td></tr>';
+				html += '<tr><td>Owner</td><td>' + (p.owner_dba ? p.owner_dba : p.owner) + '</td></tr>';
 				html += '<tr><td>Market Area</td><td>' + p.market + '</td></tr>';
 				html += '<tr><td>Call Sign</td><td><a href="http://wireless2.fcc.gov/UlsApp/UlsSearch/license.jsp?licKey=' + p.uls_number + '">' + p.call_sign + '</a></td></tr>';
 				html += '<tr><td>Population</td><td>' + p.population + '</td></tr>';
@@ -176,7 +176,7 @@ map.on('click', function (e) {
 			for (var j = 0; j < ranges.length; ++j) {
 				var pair = ranges[j].split('-');
 				var bw = parseFloat(pair[1]) - parseFloat(pair[0]);
-				var owner = p.owner_common_name ? p.owner_common_name : p.owner;
+				var owner = p.owner_dba ? p.owner_dba : p.owner;
 				if (!bws[owner]) bws[owner] = 0;
 				bws[owner] += bw;
 			}
