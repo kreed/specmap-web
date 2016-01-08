@@ -106,10 +106,22 @@ function swapBandLayers(band) {
 
 	map.batch(function(batch) {
 		for (var l in map.style._layers) {
-			if (l.startsWith('specmap')) {
+			if (l.indexOf('specmap') >= 0) {
 				batch.removeLayer(l);
 			}
 		}
+
+		batch.addLayer({
+			"id": "hidden_specmap",
+			"interactive": true,
+			"type": "fill",
+			"source": "specmap",
+			"source-layer": "specmap",
+			"filter": ["!=", "block", band],
+			"paint": {
+				"fill-opacity": 0,
+			}
+		});
 
 		var l = Object.assign({ "id": "specmap_default" }, proto);
 		l.filter = l.filter.concat([["!in", "owner_common_name"].concat(Object.keys(color_table))]);
@@ -147,9 +159,11 @@ map.on('click', function (e) {
 	map.featuresAt(e.point, {}, function (err, features) {
 		if (err) throw err;
 		var html = '';
+		var bws = {}
 		for (var i = 0; i < features.length; ++i) {
+			var p = features[i]['properties'];
+
 			if (features[i]['layer']['id'].startsWith('specmap')) {
-				var p = features[i]['properties'];
 				html += '<tr><td>Owner</td><td>' + (p.owner_common_name ? p.owner_common_name : p.owner) + '</td></tr>';
 				html += '<tr><td>Market Area</td><td>' + p.market + '</td></tr>';
 				html += '<tr><td>Call Sign</td><td><a href="http://wireless2.fcc.gov/UlsApp/UlsSearch/license.jsp?licKey=' + p.uls_number + '">' + p.call_sign + '</a></td></tr>';
@@ -157,6 +171,18 @@ map.on('click', function (e) {
 				html += '<tr><td>Frequency (downlink)</td><td>' + p.downlink + '</td></tr>';
 				html += '<tr class="end"><td>Frequency (uplink)</td><td>' + p.uplink + '</td></tr>';
 			}
+
+			var ranges = p.downlink.split(',');
+			for (var j = 0; j < ranges.length; ++j) {
+				var pair = ranges[j].split('-');
+				var bw = parseFloat(pair[1]) - parseFloat(pair[0]);
+				var owner = p.owner_common_name ? p.owner_common_name : p.owner;
+				if (!bws[owner]) bws[owner] = 0;
+				bws[owner] += bw;
+			}
+		}
+		for (var owner in bws) {
+			html += '<tr><td>' + owner + '</td><td>' + bws[owner] + '</td></tr>';
 		}
 		if (html) {
 			var tooltip = new mapboxgl.Popup()
