@@ -7,19 +7,20 @@
 <script src='//api.tiles.mapbox.com/mapbox-gl-js/v0.12.1/mapbox-gl.js'></script>
 <link href='//api.tiles.mapbox.com/mapbox-gl-js/v0.12.1/mapbox-gl.css' rel='stylesheet' />
 <style>
-body { margin:0; padding:0; }
-#map { position:absolute; top:0; bottom:0; width:100%; }
+html, body, #map {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
 #bandselect {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	width: 300px;
-	background: rgba(255, 255, 255, 0.8);
+	height: 100%;
+	float: right;
+	overflow-y: auto;
 }
 .separated-table { border-collapse: collapse; }
 #bandselect thead { font-weight: bold }
 #bandselect tbody { cursor: pointer }
+#bandselect td { padding: 0 3px; }
 #bandselect tr.active { background: #ddd }
 .end:not(:last-child) {
 	border-bottom: 1px solid black;
@@ -27,10 +28,9 @@ body { margin:0; padding:0; }
 </style>
 </head>
 <body>
-<div id='map'></div>
-<table id='bandselect' class="separated-table">
+<div id='bandselect'><table class="separated-table">
 	<thead>
-	<tr><td>LTE Band #</td><td>Band Name</td><td>Block</td><td>Freq</td></tr>
+	<tr><td>LTE Band</td><td>Band Name</td><td>Block</td><td>Freq (MHz)</td></tr>
 	</thead>
 	<tbody>
 	<tr id='700LA'><td>12</td><td>700 Mhz (L)</td><td>A</td><td>698-704<br>728-734</td></tr>
@@ -62,7 +62,8 @@ body { margin:0; padding:0; }
 	<tr id='WCSA'><td>30</td><td>WCS</td><td>A</td><td>2305-2310<br>2350-2355</td></tr>
 	<tr id='WCSB'><td>30</td><td>WCS</td><td>B</td><td>2310-2315<br>2355-2360</td></tr>
 	</tbody>
-</table>
+</table></div>
+<div id='map'></div>
 <script>
 mapboxgl.accessToken = 'pk.eyJ1Ijoia3JlM2QiLCJhIjoieU9KWThOUSJ9.lMOWQzER-r4HQZwX8vIWbw';
 
@@ -70,7 +71,7 @@ var map = new mapboxgl.Map({
 	container: "map",
 	style: 'mapbox://styles/kre3d/cij66zhmy00599hkl0drs773s',
 	center: [-98.580, 39.828],
-	zoom: 4
+	zoom: 4,
 });
 
 color_table = {
@@ -149,7 +150,7 @@ map.on('style.load', function () {
 		tiles: [(location.protocol == 'https:' ? 'https' : 'http') + "://kreed.org/specmap/tiles/{z}/{x}/{y}.pbf"],
 		minzoom: 0,
 		maxzoom: 10,
-		attribution: '<a href="specmap.mbtiles">Download data</a>'
+		attribution: '<a href="specmap.mbtiles">Download data</a>',
 	});
 
 	swapBandLayers('700LA');
