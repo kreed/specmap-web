@@ -17,11 +17,10 @@ body { margin:0; padding:0; }
 	width: 300px;
 	background: rgba(255, 255, 255, 0.8);
 }
-#bandselect { border-collapse: collapse; }
+.separated-table { border-collapse: collapse; }
 #bandselect thead { font-weight: bold }
 #bandselect tbody { cursor: pointer }
 #bandselect tr.active { background: #ddd }
-.popup-table { border-collapse: collapse; }
 .end:not(:last-child) {
 	border-bottom: 1px solid black;
 }
@@ -29,34 +28,34 @@ body { margin:0; padding:0; }
 </head>
 <body>
 <div id='map'></div>
-<table id='bandselect'>
+<table id='bandselect' class="separated-table">
 	<thead>
-	<tr><td>Band</td><td>Block</td><td>Freq</td></tr>
+	<tr><td>LTE Band #</td><td>Band Name</td><td>Block</td><td>Freq</td></tr>
 	</thead>
 	<tbody>
-	<tr id='700LA'><td>700 Mhz (L)</td><td>A</td><td>698-704<br>728-734</td></tr>
-	<tr id='700LB'><td>700 Mhz (L)</td><td>B</td><td>704-710<br>734-740</td></tr>
-	<tr id='700LC'><td>700 Mhz (L)</td><td>C</td><td>710-716<br>740-746</td></tr>
-	<tr id='700UC'><td>700 Mhz (U)</td><td>C</td><td>746-757<br>776-787</td></tr>
-	<tr id='AWS1A'><td>AWS1</td><td>A</td><td>1710-1720<br>2110-2120</td></tr>
-	<tr id='AWS1B'><td>AWS1</td><td>B</td><td>1720-1730<br>2120-2130</td></tr>
-	<tr id='AWS1C'><td>AWS1</td><td>C</td><td>1730-1735<br>2130-2135</td></tr>
-	<tr id='AWS1D'><td>AWS1</td><td>D</td><td>1735-1740<br>2135-2140</td></tr>
-	<tr id='AWS1E'><td>AWS1</td><td>E</td><td>1740-1745<br>2140-2145</td></tr>
-	<tr id='AWS1F'><td>AWS1</td><td>F</td><td>1745-1755<br>2145-2155</td></tr>
-	<tr id='AWS3G'><td>AWS3</td><td>G</td><td>1755-1760<br>2155-2160</td></tr>
-	<tr id='AWS3H'><td>AWS3</td><td>H</td><td>1760-1765<br>2160-2165</td></tr>
-	<tr id='AWS3I'><td>AWS3</td><td>I</td><td>1765-1770<br>2165-2170</td></tr>
-	<tr id='AWS3J'><td>AWS3</td><td>J</td><td>1770-1780<br>2170-2180</td></tr>
-	<tr id='PCSA'><td>PCS</td><td>A</td><td>1850-1865<br>1930-1945</td></tr>
-	<tr id='PCSD'><td>PCS</td><td>D</td><td>1865-1870<br>1945-1950</td></tr>
-	<tr id='PCSB'><td>PCS</td><td>B</td><td>1870-1885<br>1950-1965</td></tr>
-	<tr id='PCSE'><td>PCS</td><td>E</td><td>1885-1890<br>1965-1970</td></tr>
-	<tr id='PCSF'><td>PCS</td><td>F</td><td>1890-1895<br>1970-1975</td></tr>
-	<tr id='PCSC'><td>PCS</td><td>C</td><td>1895-1910<br>1975-1990</td></tr>
-	<tr id='PCSG'><td>PCS</td><td>G</td><td>1910-1915<br>1990-1995</td></tr>
-	<tr id='WCSA'><td>WCS</td><td>A</td><td>2305-2310<br>2350-2355</td></tr>
-	<tr id='WCSB'><td>WCS</td><td>B</td><td>2310-2315<br>2355-2360</td></tr>
+	<tr id='700LA'><td>12</td><td>700 Mhz (L)</td><td>A</td><td>698-704<br>728-734</td></tr>
+	<tr id='700LB'><td>12,17</td><td>700 Mhz (L)</td><td>B</td><td>704-710<br>734-740</td></tr>
+	<tr id='700LC'><td>12,17</td><td>700 Mhz (L)</td><td>C</td><td>710-716<br>740-746</td></tr>
+	<tr id='700UC' class='end'><td>13</td><td>700 Mhz (U)</td><td>C</td><td>746-757<br>776-787</td></tr>
+	<tr id='AWS1A'><td>4,66</td><td>AWS1</td><td>A</td><td>1710-1720<br>2110-2120</td></tr>
+	<tr id='AWS1B'><td>4,66</td><td>AWS1</td><td>B</td><td>1720-1730<br>2120-2130</td></tr>
+	<tr id='AWS1C'><td>4,66</td><td>AWS1</td><td>C</td><td>1730-1735<br>2130-2135</td></tr>
+	<tr id='AWS1D'><td>4,66</td><td>AWS1</td><td>D</td><td>1735-1740<br>2135-2140</td></tr>
+	<tr id='AWS1E'><td>4,66</td><td>AWS1</td><td>E</td><td>1740-1745<br>2140-2145</td></tr>
+	<tr id='AWS1F'><td>4,66</td><td>AWS1</td><td>F</td><td>1745-1755<br>2145-2155</td></tr>
+	<tr id='AWS3G'><td>66</td><td>AWS3</td><td>G</td><td>1755-1760<br>2155-2160</td></tr>
+	<tr id='AWS3H'><td>66</td><td>AWS3</td><td>H</td><td>1760-1765<br>2160-2165</td></tr>
+	<tr id='AWS3I'><td>66</td><td>AWS3</td><td>I</td><td>1765-1770<br>2165-2170</td></tr>
+	<tr id='AWS3J' class='end'><td>66</td><td>AWS3</td><td>J</td><td>1770-1780<br>2170-2180</td></tr>
+	<tr id='PCSA'><td>2,25</td><td>PCS</td><td>A</td><td>1850-1865<br>1930-1945</td></tr>
+	<tr id='PCSD'><td>2,25</td><td>PCS</td><td>D</td><td>1865-1870<br>1945-1950</td></tr>
+	<tr id='PCSB'><td>2,25</td><td>PCS</td><td>B</td><td>1870-1885<br>1950-1965</td></tr>
+	<tr id='PCSE'><td>2,25</td><td>PCS</td><td>E</td><td>1885-1890<br>1965-1970</td></tr>
+	<tr id='PCSF'><td>2,25</td><td>PCS</td><td>F</td><td>1890-1895<br>1970-1975</td></tr>
+	<tr id='PCSC'><td>2,25</td><td>PCS</td><td>C</td><td>1895-1910<br>1975-1990</td></tr>
+	<tr id='PCSG' class='end'><td>25</td><td>PCS</td><td>G</td><td>1910-1915<br>1990-1995</td></tr>
+	<tr id='WCSA'><td>30</td><td>WCS</td><td>A</td><td>2305-2310<br>2350-2355</td></tr>
+	<tr id='WCSB'><td>30</td><td>WCS</td><td>B</td><td>2310-2315<br>2355-2360</td></tr>
 	</tbody>
 </table>
 <script>
@@ -101,9 +100,9 @@ function swapBandLayers(band) {
 	var rows = document.querySelectorAll('#bandselect tbody tr');
 	for (var i = 0; i < rows.length; ++i) {
 		if (rows[i].id == band) {
-			rows[i].className = 'active';
+			rows[i].classList.add('active');
 		} else {
-			rows[i].className = '';
+			rows[i].classList.remove('active');
 		}
 	}
 
@@ -192,7 +191,7 @@ map.on('click', function (e) {
 		if (html) {
 			var tooltip = new mapboxgl.Popup()
 				.setLngLat(e.lngLat)
-				.setHTML('<table class="popup-table">' + html + '</table>')
+				.setHTML('<table class="separated-table">' + html + '</table>')
 				.addTo(map);
 		}
 	});
