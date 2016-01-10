@@ -55,6 +55,8 @@ body { margin:0; padding:0; }
 	<tr id='PCSF'><td>PCS</td><td>F</td><td>1890-1895<br>1970-1975</td></tr>
 	<tr id='PCSC'><td>PCS</td><td>C</td><td>1895-1910<br>1975-1990</td></tr>
 	<tr id='PCSG'><td>PCS</td><td>G</td><td>1910-1915<br>1990-1995</td></tr>
+	<tr id='WCSA'><td>WCS</td><td>A</td><td>2305-2310<br>2350-2355</td></tr>
+	<tr id='WCSB'><td>WCS</td><td>B</td><td>2310-2315<br>2355-2360</td></tr>
 	</tbody>
 </table>
 <script>
@@ -173,13 +175,15 @@ map.on('click', function (e) {
 				html += '<tr class="end"><td>Frequency (uplink)</td><td>' + p.uplink + '</td></tr>';
 			}
 
-			var ranges = p.downlink.split(',');
-			for (var j = 0; j < ranges.length; ++j) {
-				var pair = ranges[j].split('-');
-				var bw = parseFloat(pair[1]) - parseFloat(pair[0]);
-				var owner = p.owner_dba ? p.owner_dba : p.owner;
-				if (!bws[owner]) bws[owner] = 0;
-				bws[owner] += bw;
+			if (p.downlink) {
+				var ranges = p.downlink.split(',');
+				for (var j = 0; j < ranges.length; ++j) {
+					var pair = ranges[j].split('-');
+					var bw = parseFloat(pair[1]) - parseFloat(pair[0]);
+					var owner = p.owner_dba ? p.owner_dba : p.owner;
+					if (!bws[owner]) bws[owner] = 0;
+					bws[owner] += bw;
+				}
 			}
 		}
 		for (var owner in bws) {
