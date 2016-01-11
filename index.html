@@ -12,10 +12,20 @@ html, body, #map {
 	margin: 0;
 	padding: 0;
 }
+.hidden {
+	display: none;
+}
 #bandselect {
 	height: 100%;
 	float: right;
 	overflow-y: auto;
+}
+.sidebar-toggle-icon {
+	padding: 5px;
+	background-image: url("data:image/svg+xml;charset=utf8,%3Csvg%20viewBox=%220%200%2022%2022%22%20xmlns='http://www.w3.org/2000/svg'%3E%3Cg%20fill=%22#333%22%3E%3Cpath%20d=%22m9%208v2h-4v2h4v2l4-3z%22%20fill-rule=%22evenodd%22/%3E%3Crect%20height=%2210%22%20width=%222%22%20y=%226%22%20x=%2214%22/%3E%3C/g%3E%3C/svg%3E");
+}
+#bandselect.hidden + #map .sidebar-toggle-icon {
+	background-image: url("data:image/svg+xml;charset=utf8,%3Csvg%20viewBox=%220%200%2022%2022%22%20xmlns='http://www.w3.org/2000/svg'%3E%3Cg%20fill=%22#333%22%3E%3Cpath%20d=%22m12%208v2h4v2h-4v2l-4-3z%22%20fill-rule=%22evenodd%22/%3E%3Crect%20height=%2210%22%20width=%222%22%20y=%226%22%20x=%225%22/%3E%3C/g%3E%3C/svg%3E");
 }
 .separated-table { border-collapse: collapse; }
 #bandselect thead { font-weight: bold }
@@ -88,6 +98,42 @@ color_table = {
 	'Dish Network': '#ff7794',
 	'Infrastructure Networks': '#000000',
 };
+
+function SidebarControl(options) {
+	mapboxgl.util.setOptions(this, options);
+}
+
+SidebarControl.prototype = mapboxgl.util.inherit(mapboxgl.Control, {
+	options: {
+		position: 'top-right'
+	},
+
+	onAdd: function(map) {
+		var container = document.createElement('div');
+		container.className = 'mapboxgl-ctrl-group';
+		map.getContainer().appendChild(container);
+
+		var btn = document.createElement('button');
+		btn.className = 'mapboxgl-ctrl-icon sidebar-toggle-icon';
+		btn.addEventListener('click', this.toggle.bind(this));
+		container.appendChild(btn);
+
+		return container;
+	},
+
+	toggle: function() {
+		document.getElementById('bandselect').classList.toggle('hidden');
+		map.resize();
+	}
+});
+
+function is_touch_device() {
+	return 'ontouchstart' in window       // works on most browsers
+		|| navigator.maxTouchPoints;       // works on IE10/11 and Surface
+};
+
+map.addControl(new SidebarControl());
+if (!is_touch_device) map.addControl(new mapboxgl.Navigation());
 
 function swapBandLayers(band) {
 	var proto = {
@@ -202,8 +248,6 @@ map.on('click', function (e) {
 		}
 	});
 });
-
-//map.addControl(new mapboxgl.Navigation());
 </script>
 </body>
 </html>
