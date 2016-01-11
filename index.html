@@ -251,6 +251,7 @@ map.on('click', function (e) {
 			bws[owner][2] += parseBw(p.tdd);
 		}
 		for (var owner in bws) {
+			for (var i = 0; i < bws[owner].length; ++i) bws[owner][i] = Math.round(bws[owner][i] * 100) / 100;
 			html += '<tr><td>' + owner + '</td><td>' + bws[owner].join(' | ') + '</td></tr>';
 		}
 		if (html) {
