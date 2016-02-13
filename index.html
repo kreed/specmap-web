@@ -256,9 +256,15 @@ map.on('click', function (e) {
 			bws[owner][1] += parseBw(p.uplink);
 			bws[owner][2] += parseBw(p.tdd);
 		}
+		var bws_array = [];
 		for (var owner in bws) {
-			for (var i = 0; i < bws[owner].length; ++i) bws[owner][i] = Math.round(bws[owner][i] * 100) / 100;
-			html += '<tr><td>' + owner + '</td><td>' + bws[owner].join(' | ') + '</td></tr>';
+			bws_array.push({ name: owner, bws: bws[owner] });
+		}
+		bws_array.sort(function(a,b) { return b.bws[0] - a.bws[0] });
+		for (var i = 0; i < bws_array.length; ++i) {
+			var bw = bws_array[i].bws;
+			for (var j = 0; j < bw.length; ++j) bw[j] = Math.round(bw[j] * 100) / 100;
+			html += '<tr><td>' + bws_array[i].name + '</td><td>' + bw.join(' | ') + '</td></tr>';
 		}
 		if (html) {
 			var tooltip = new mapboxgl.Popup()
