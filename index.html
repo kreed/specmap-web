@@ -240,6 +240,7 @@ map.on('click', function (e) {
 			var p = features[i]['properties'];
 
 			if (features[i]['layer']['id'] != 'specmap_hidden') {
+				if (i > 0) html += '<tr class="divider"><td></td><td></td></tr>';
 				html += '<tr><td>Owner</td><td>' + (p.owner_dba ? p.owner_dba : p.owner) + '</td></tr>';
 				html += '<tr><td>Market Area</td><td>' + p.market + '</td></tr>';
 				html += '<tr><td>Call Sign</td><td><a href="http://wireless2.fcc.gov/UlsApp/UlsSearch/license.jsp?licKey=' + p.uls_number + '">' + p.call_sign + '</a></td></tr>';
@@ -247,7 +248,6 @@ map.on('click', function (e) {
 				if (p.downlink) html += '<tr><td>Frequency (downlink)</td><td>' + p.downlink + '</td></tr>';
 				if (p.uplink) html += '<tr><td class="end">Frequency (uplink)</td><td>' + p.uplink + '</td></tr>';
 				if (p.tdd) html += '<tr><td>Frequency (TDD)</td><td>' + p.tdd + '</td></tr>';
-				html += '<tr class="divider"><td></td><td></td></tr>'
 			}
 
 			var owner = p.owner_dba ? p.owner_dba : p.owner;
@@ -256,16 +256,21 @@ map.on('click', function (e) {
 			bws[owner][1] += parseBw(p.uplink);
 			bws[owner][2] += parseBw(p.tdd);
 		}
-		var bws_array = [];
-		for (var owner in bws) {
-			bws_array.push({ name: owner, bws: bws[owner] });
+
+		if (e.originalEvent.ctrlKey) {
+			html += '<tr class="divider"><td></td><td></td></tr>';
+			var bws_array = [];
+			for (var owner in bws) {
+				bws_array.push({ name: owner, bws: bws[owner] });
+			}
+			bws_array.sort(function(a,b) { return b.bws[0] - a.bws[0] });
+			for (var i = 0; i < bws_array.length; ++i) {
+				var bw = bws_array[i].bws;
+				for (var j = 0; j < bw.length; ++j) bw[j] = Math.round(bw[j] * 100) / 100;
+				html += '<tr><td>' + bws_array[i].name + '</td><td>' + bw.join(' | ') + '</td></tr>';
+			}
 		}
-		bws_array.sort(function(a,b) { return b.bws[0] - a.bws[0] });
-		for (var i = 0; i < bws_array.length; ++i) {
-			var bw = bws_array[i].bws;
-			for (var j = 0; j < bw.length; ++j) bw[j] = Math.round(bw[j] * 100) / 100;
-			html += '<tr><td>' + bws_array[i].name + '</td><td>' + bw.join(' | ') + '</td></tr>';
-		}
+
 		if (html) {
 			var tooltip = new mapboxgl.Popup()
 				.setLngLat(e.lngLat)
