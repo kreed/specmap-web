@@ -203,7 +203,7 @@ function swapBandLayers(band) {
 map.on('style.load', function () {
 	map.addSource('specmap', {
 		type: 'vector',
-		tiles: [(location.protocol == 'https:' ? 'https' : 'http') + "://kreed.org/specmap/tiles/{z}/{x}/{y}.pbf"],
+		tiles: [(location.protocol == 'https:' ? 'https' : 'http') + "://" + location.hostname + "/specmap/tiles/{z}/{x}/{y}.pbf"],
 		minzoom: 0,
 		maxzoom: 10,
 		attribution: '<a href="https://bitbucket.org/ceby/specmap">Source code</a>',
