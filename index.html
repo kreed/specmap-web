@@ -4,8 +4,8 @@
 <meta charset='utf-8' />
 <title>FCC Spectrum Map</title>
 <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-<script src='//api.tiles.mapbox.com/mapbox-gl-js/v0.12.3/mapbox-gl.js'></script>
-<link href='//api.tiles.mapbox.com/mapbox-gl-js/v0.12.3/mapbox-gl.css' rel='stylesheet' />
+<script src='//api.tiles.mapbox.com/mapbox-gl-js/v0.19.0/mapbox-gl.js'></script>
+<link href='//api.tiles.mapbox.com/mapbox-gl-js/v0.19.0/mapbox-gl.css' rel='stylesheet' />
 <style>
 html, body, #map {
 	height: 100%;
@@ -87,7 +87,7 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoia3JlM2QiLCJhIjoieU9KWThOUSJ9.lMOWQzER-r4HQZwX
 
 var map = new mapboxgl.Map({
 	container: "map",
-	style: 'mapbox://styles/kre3d/cij66zhmy00599hkl0drs773s',
+	style: 'mapbox://styles/kre3d/cioo1ba19000jbpnlekarwysm',
 	center: [-98.580, 39.828],
 	zoom: 4,
 });
@@ -168,36 +168,34 @@ function swapBandLayers(band) {
 		}
 	}
 
-	map.batch(function(batch) {
-		for (var l in map.style._layers) {
-			if (l.indexOf('specmap') >= 0) {
-				batch.removeLayer(l);
-			}
+	for (var l in map.style._layers) {
+		if (l.indexOf('specmap') >= 0) {
+			map.removeLayer(l);
 		}
+	}
 
-		batch.addLayer({
-			"id": "specmap_hidden",
-			"interactive": true,
-			"type": "fill",
-			"source": "specmap",
-			"source-layer": "specmap",
-			"filter": ["!=", "block", band],
-			"paint": {
-				"fill-opacity": 0,
-			}
-		});
-
-		var l = Object.assign({ "id": "specmap_default" }, proto);
-		l.filter = l.filter.concat([["!in", "owner_dba"].concat(Object.keys(color_table))]);
-		batch.addLayer(l);
-
-		for (var owner in color_table) {
-			var l = Object.assign({ "id": "specmap_" + owner }, proto);
-			l.filter = l.filter.concat([["==", "owner_dba", owner]]);
-			l.paint['fill-color'] = color_table[owner];
-			batch.addLayer(l);
+	map.addLayer({
+		"id": "specmap_hidden",
+		"interactive": true,
+		"type": "fill",
+		"source": "specmap",
+		"source-layer": "specmap",
+		"filter": ["!=", "block", band],
+		"paint": {
+			"fill-opacity": 0,
 		}
 	});
+
+	var l = Object.assign({ "id": "specmap_default" }, proto);
+	l.filter = l.filter.concat([["!in", "owner_dba"].concat(Object.keys(color_table))]);
+	map.addLayer(l);
+
+	for (var owner in color_table) {
+		var l = Object.assign({ "id": "specmap_" + owner }, proto);
+		l.filter = l.filter.concat([["==", "owner_dba", owner]]);
+		l.paint['fill-color'] = color_table[owner];
+		map.addLayer(l);
+	}
 }
 
 map.on('style.load', function () {
@@ -231,53 +229,51 @@ function parseBw(str) {
 }
 
 map.on('click', function (e) {
-	map.featuresAt(e.point, {}, function (err, features) {
-		if (err) throw err;
-		var html = '';
-		var bws = {}
-		for (var i = 0; i < features.length; ++i) {
-			if (!features[i]['layer']['id'].startsWith('specmap')) continue
-			var p = features[i]['properties'];
+	var features = map.queryRenderedFeatures(e.point, {"filter": ['has', 'block']});
+	var html = '';
+	var bws = {}
+	for (var i = 0; i < features.length; ++i) {
+		if (!features[i]['layer']['id'].startsWith('specmap')) continue
+		var p = features[i]['properties'];
 
-			if (features[i]['layer']['id'] != 'specmap_hidden') {
-				if (i > 0) html += '<tr class="divider"><td></td><td></td></tr>';
-				html += '<tr><td>Owner</td><td>' + (p.owner_dba ? p.owner_dba : p.owner) + '</td></tr>';
-				html += '<tr><td>Market Area</td><td>' + p.market + '</td></tr>';
-				html += '<tr><td>Call Sign</td><td><a href="http://wireless2.fcc.gov/UlsApp/UlsSearch/license.jsp?licKey=' + p.uls_number + '">' + p.call_sign + '</a></td></tr>';
-				html += '<tr><td>Population</td><td>' + p.population + '</td></tr>';
-				if (p.downlink) html += '<tr><td>Frequency (downlink)</td><td>' + p.downlink + '</td></tr>';
-				if (p.uplink) html += '<tr><td class="end">Frequency (uplink)</td><td>' + p.uplink + '</td></tr>';
-				if (p.tdd) html += '<tr><td>Frequency (TDD)</td><td>' + p.tdd + '</td></tr>';
-			}
-
-			var owner = p.owner_dba ? p.owner_dba : p.owner;
-			if (!bws[owner]) bws[owner] = [0,0,0];
-			bws[owner][0] += parseBw(p.downlink);
-			bws[owner][1] += parseBw(p.uplink);
-			bws[owner][2] += parseBw(p.tdd);
+		if (features[i]['layer']['id'] != 'specmap_hidden') {
+			if (i > 0) html += '<tr class="divider"><td></td><td></td></tr>';
+			html += '<tr><td>Owner</td><td>' + (p.owner_dba ? p.owner_dba : p.owner) + '</td></tr>';
+			html += '<tr><td>Market Area</td><td>' + p.market + '</td></tr>';
+			html += '<tr><td>Call Sign</td><td><a href="http://wireless2.fcc.gov/UlsApp/UlsSearch/license.jsp?licKey=' + p.uls_number + '">' + p.call_sign + '</a></td></tr>';
+			html += '<tr><td>Population</td><td>' + p.population + '</td></tr>';
+			if (p.downlink) html += '<tr><td>Frequency (downlink)</td><td>' + p.downlink + '</td></tr>';
+			if (p.uplink) html += '<tr><td class="end">Frequency (uplink)</td><td>' + p.uplink + '</td></tr>';
+			if (p.tdd) html += '<tr><td>Frequency (TDD)</td><td>' + p.tdd + '</td></tr>';
 		}
 
-		if (e.originalEvent.ctrlKey) {
-			html += '<tr class="divider"><td></td><td></td></tr>';
-			var bws_array = [];
-			for (var owner in bws) {
-				bws_array.push({ name: owner, bws: bws[owner] });
-			}
-			bws_array.sort(function(a,b) { return b.bws[0] - a.bws[0] });
-			for (var i = 0; i < bws_array.length; ++i) {
-				var bw = bws_array[i].bws;
-				for (var j = 0; j < bw.length; ++j) bw[j] = Math.round(bw[j] * 100) / 100;
-				html += '<tr><td>' + bws_array[i].name + '</td><td>' + bw.join(' | ') + '</td></tr>';
-			}
-		}
+		var owner = p.owner_dba ? p.owner_dba : p.owner;
+		if (!bws[owner]) bws[owner] = [0,0,0];
+		bws[owner][0] += parseBw(p.downlink);
+		bws[owner][1] += parseBw(p.uplink);
+		bws[owner][2] += parseBw(p.tdd);
+	}
 
-		if (html) {
-			var tooltip = new mapboxgl.Popup()
-				.setLngLat(e.lngLat)
-				.setHTML('<table class="separated-table">' + html + '</table>')
-				.addTo(map);
+	if (e.originalEvent.ctrlKey && html) {
+		html += '<tr class="divider"><td></td><td></td></tr>';
+		var bws_array = [];
+		for (var owner in bws) {
+			bws_array.push({ name: owner, bws: bws[owner] });
 		}
-	});
+		bws_array.sort(function(a,b) { return b.bws[0] - a.bws[0] });
+		for (var i = 0; i < bws_array.length; ++i) {
+			var bw = bws_array[i].bws;
+			for (var j = 0; j < bw.length; ++j) bw[j] = Math.round(bw[j] * 100) / 100;
+			html += '<tr><td>' + bws_array[i].name + '</td><td>' + bw.join(' | ') + '</td></tr>';
+		}
+	}
+
+	if (html) {
+		var tooltip = new mapboxgl.Popup()
+			.setLngLat(e.lngLat)
+			.setHTML('<table class="separated-table">' + html + '</table>')
+			.addTo(map);
+	}
 });
 </script>
 </body>
