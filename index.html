@@ -92,23 +92,6 @@ var map = new mapboxgl.Map({
 	zoom: 4,
 });
 
-color_table = {
-	'T-Mobile': '#ff00ff',
-	'iWireless': '#ff9cff',
-	'C Spire': '#208dd9',
-	'AT&T': '#00FFFF',
-	'US Cellular': '#A5CCE8',
-	'Continuum C700': '#00ff00',
-	'Cavalier': '#009E60',
-	"Sprint": '#FFFF00',
-	"Verizon": '#ff0000',
-	'Dish Network': '#ff7794',
-	'Infrastructure Networks': '#000000',
-	'Commnet Wireless / Choice Wireless': '#001E4D',
-	'Viaero Wireless': '#7BC99F',
-	'West Central Wireless': '#E08048',
-};
-
 function SidebarControl(options) {
 	mapboxgl.util.setOptions(this, options);
 }
@@ -147,16 +130,6 @@ if (!is_touch_device) map.addControl(new mapboxgl.Navigation());
 
 function swapBandLayers(band) {
 	var proto = {
-		"interactive": true,
-		"type": "fill",
-		"source": "specmap",
-		"source-layer": "specmap",
-		"filter": ["all", ["==", "block", band]],
-		"paint": {
-			"fill-opacity": 0.5,
-			"fill-color": "#555",
-			"fill-outline-color": "#000",
-		}
 	}
 
 	var rows = document.querySelectorAll('#bandselect tbody tr');
@@ -186,16 +159,39 @@ function swapBandLayers(band) {
 		}
 	});
 
-	var l = Object.assign({ "id": "specmap_default" }, proto);
-	l.filter = l.filter.concat([["!in", "owner_dba"].concat(Object.keys(color_table))]);
-	map.addLayer(l);
-
-	for (var owner in color_table) {
-		var l = Object.assign({ "id": "specmap_" + owner }, proto);
-		l.filter = l.filter.concat([["==", "owner_dba", owner]]);
-		l.paint['fill-color'] = color_table[owner];
-		map.addLayer(l);
-	}
+	map.addLayer({
+		"id": "specmap_visible",
+		"interactive": true,
+		"type": "fill",
+		"source": "specmap",
+		"source-layer": "specmap",
+		"filter": ["all", ["==", "block", band]],
+		"paint": {
+			"fill-opacity": 0.5,
+			"fill-color": {
+				property: 'owner_dba',
+				type: 'categorical',
+				stops: [
+					['Other', '#555'],
+					['T-Mobile', '#ff00ff'],
+					['iWireless', '#ff9cff'],
+					['C Spire', '#208dd9'],
+					['AT&T', '#00FFFF'],
+					['US Cellular', '#A5CCE8'],
+					['Continuum C700', '#00ff00'],
+					['Cavalier', '#009E60'],
+					["Sprint", '#FFFF00'],
+					["Verizon", '#ff0000'],
+					['Dish Network', '#ff7794'],
+					['Infrastructure Networks', '#000000'],
+					['Commnet Wireless / Choice Wireless', '#001E4D'],
+					['Viaero Wireless', '#7BC99F'],
+					['West Central Wireless', '#E08048'],
+				]
+			},
+			"fill-outline-color": "#000",
+		}
+	});
 }
 
 map.on('style.load', function () {
