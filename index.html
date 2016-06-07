@@ -225,14 +225,16 @@ function parseBw(str) {
 }
 
 map.on('click', function (e) {
-	var features = map.queryRenderedFeatures(e.point, {"filter": ['has', 'block']});
+	var fullMarketInfo = e.originalEvent.ctrlKey;
+	var layers = fullMarketInfo ? ["specmap_visible", "specmap_hidden"] : ["specmap_visible"];
+	var features = map.queryRenderedFeatures(e.point, {"layers": layers});
 	var html = '';
 	var bws = {}
 	for (var i = 0; i < features.length; ++i) {
 		if (!features[i]['layer']['id'].startsWith('specmap')) continue
 		var p = features[i]['properties'];
 
-		if (features[i]['layer']['id'] != 'specmap_hidden') {
+		if (features[i]['layer']['id'] == 'specmap_visible') {
 			if (i > 0) html += '<tr class="divider"><td></td><td></td></tr>';
 			html += '<tr><td>Owner</td><td>' + (p.owner_dba ? p.owner_dba : p.owner) + '</td></tr>';
 			html += '<tr><td>Market Area</td><td>' + p.market + '</td></tr>';
@@ -250,7 +252,7 @@ map.on('click', function (e) {
 		bws[owner][2] += parseBw(p.tdd);
 	}
 
-	if (e.originalEvent.ctrlKey && html) {
+	if (fullMarketInfo && html) {
 		html += '<tr class="divider"><td></td><td></td></tr>';
 		var bws_array = [];
 		for (var owner in bws) {
