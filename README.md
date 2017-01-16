@@ -1,3 +1,3 @@
 Mapbox GL-based frontend for [specmap](https://bitbucket.org/ceby/specmap). [Demo here](http://kreed.org/specmap/)
 
-Currently this just displays market geometries and colors them by owner. In the future I plan to add a tool to detail spectrum owners in clicked area, similar to how [this tool](http://www.spectrumgateway.com/county?cc=48029&lat=29.42008&lng=-98.57210) works (but for all carriers, not just T-Mobile).
+Currently this just displays market geometries and colors them by owner. More functions may be added in the future.
